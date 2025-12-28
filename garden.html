@@ -4,84 +4,238 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AURELIA // GARDEN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: { aurelia: { bg: '#050505', panel: '#0a0a0a', cyan: '#00FFFF', orange: '#FFA500', green: '#00FF00', dim: '#333333', text: '#e5e5e5' } },
-                    fontFamily: { mono: ['"Space Mono"', 'monospace'], sans: ['"Inter"', 'sans-serif'] }
-                }
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'aurelia-dark': '#0a0a0b',
+              'aurelia-cyan': '#00f2ff',
+              'aurelia-green': '#39ff14',
+              'aurelia-orange': '#ff8c00',
+              'aurelia-dim': '#1e1e20',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            animation: {
+                'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             }
+          }
         }
+      }
     </script>
+    <style>
+      body { background-color: #0a0a0b; overflow-x: hidden; }
+      .glass { background: rgba(10, 10, 11, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+      
+      /* The Neural Canvas */
+      #neural-canvas {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+          pointer-events: none;
+          opacity: 0.4;
+      }
+      
+      /* Status Indicators */
+      .status-seed { border-color: rgba(255,255,255,0.1); opacity: 0.6; }
+      .status-sapling { border-color: rgba(0, 242, 255, 0.5); box-shadow: 0 0 15px rgba(0, 242, 255, 0.1); }
+      .status-evergreen { border-color: #39ff14; box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); }
+    </style>
 </head>
-<body class="bg-aurelia-bg text-aurelia-text font-sans min-h-screen selection:bg-aurelia-cyan selection:text-black overflow-y-auto flex flex-col">
+<body class="text-gray-300 font-sans selection:bg-aurelia-cyan selection:text-black min-h-screen flex flex-col">
 
-    <nav class="fixed top-0 w-full z-50 border-b border-aurelia-dim bg-aurelia-bg/90 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between font-mono text-xs tracking-widest">
-            <a href="index.html" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <span class="w-2 h-2 bg-aurelia-green rounded-full animate-pulse"></span>
-                <span class="text-aurelia-green">AURELIA OS // GARDEN</span>
+    <canvas id="neural-canvas"></canvas>
+
+    <nav class="fixed top-0 w-full z-40 border-b border-aurelia-dim bg-aurelia-dark/90 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between font-mono text-[10px] tracking-[0.2em]">
+            <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div class="w-2 h-2 bg-aurelia-cyan rounded-full shadow-[0_0_8px_#00f2ff] animate-pulse"></div>
+                <span class="text-white">AURELIA_OS // GARDEN</span>
             </a>
-            <div class="flex gap-6 text-gray-500">
-                <a href="index.html" class="hover:text-aurelia-green transition-colors">LOBBY</a>
-                <a href="garden.html" class="text-aurelia-cyan border-b border-aurelia-cyan pb-1">GARDEN</a>
-                <a href="museum.html" class="hover:text-aurelia-green transition-colors">MUSEUM</a>
-                <a href="portfolio.html" class="hover:text-white transition-colors">PORTFOLIO</a>
-                <a href="services.html" class="hover:text-aurelia-orange transition-colors">SERVICES</a>
+            <div class="hidden md:flex gap-8 uppercase">
+                <a href="index.html" class="hover:text-aurelia-cyan transition-colors">00_LOBBY</a>
+                <a href="garden.html" class="text-aurelia-cyan border-b border-aurelia-cyan pb-1">01_GARDEN</a>
+                <a href="museum.html" class="hover:text-aurelia-green transition-colors">02_MUSEUM</a>
+                <a href="portfolio.html" class="hover:text-white transition-colors">03_PORTFOLIO</a>
+                <a href="services.html" class="hover:text-aurelia-orange transition-colors">04_SERVICES</a>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-6xl mx-auto px-6 pt-32 pb-20 w-full grid grid-cols-1 lg:grid-cols-4 gap-12">
+    <main class="flex-grow pt-32 pb-20 max-w-7xl mx-auto px-6 w-full relative z-10">
         
-        <div class="lg:col-span-3">
-            <div class="font-mono text-aurelia-cyan text-xs mb-4">> /ACCESSING_GROWTH_NODES...</div>
-            <h1 class="text-4xl font-bold mb-8">DIGITAL GARDEN</h1>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <article class="bg-aurelia-panel border border-aurelia-dim p-6 hover:border-aurelia-cyan transition-colors group cursor-pointer">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="font-mono text-[10px] text-aurelia-cyan bg-aurelia-cyan/10 px-2 py-1">IDEA</span>
-                        <span class="text-lg">🌱</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 group-hover:text-aurelia-cyan transition-colors">A Note on Entropy</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Why disorder increases in systems without active maintenance.</p>
-                </article>
-                
-                <article class="bg-aurelia-panel border border-aurelia-dim p-6 hover:border-aurelia-green transition-colors group cursor-pointer">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="font-mono text-[10px] text-aurelia-green bg-aurelia-green/10 px-2 py-1">THEORY</span>
-                        <span class="text-lg">🌳</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 group-hover:text-aurelia-green transition-colors">Memetics</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed">Ideas survive using the same selection pressures as genes.</p>
-                </article>
+        <div class="mb-16">
+            <div class="font-mono text-xs text-aurelia-cyan mb-4 flex items-center gap-2">
+                <span class="animate-pulse">></span>
+                <span>NEURAL_NODE_ACCESS // v3.0</span>
             </div>
-        </div>
-
-        <aside class="hidden lg:block space-y-8">
-            <div class="border border-aurelia-dim p-5">
-                <h4 class="font-mono text-xs text-aurelia-cyan mb-4 border-b border-aurelia-dim pb-2">INPUT_STREAM</h4>
-                <div class="flex gap-4 items-center">
-                    <div class="w-12 h-16 bg-gray-800 border border-gray-700 flex items-center justify-center text-[8px] text-gray-500">[IMG]</div>
-                    <div>
-                        <p class="text-sm font-bold text-white">Current Read</p>
-                        <p class="text-xs text-gray-500">Author Name</p>
-                    </div>
+            
+            <h1 class="text-5xl font-bold text-white mb-8">THE HIVE MIND</h1>
+            
+            <div class="glass p-6 rounded-lg">
+                <p class="font-mono text-[10px] text-gray-500 mb-4 uppercase tracking-widest">Select Template Layer:</p>
+                <div class="flex flex-wrap gap-3">
+                    <button class="px-4 py-2 bg-aurelia-dim/50 border border-aurelia-dim hover:border-aurelia-cyan hover:text-aurelia-cyan transition-all text-xs font-mono flex items-center gap-2">
+                        <span>🌉</span> DAILY_BRIDGE
+                    </button>
+                    <button class="px-4 py-2 bg-aurelia-cyan/10 border border-aurelia-cyan text-aurelia-cyan transition-all text-xs font-mono flex items-center gap-2 shadow-[0_0_10px_rgba(0,242,255,0.2)]">
+                        <span>⚛️</span> CONCEPT
+                    </button>
+                    <button class="px-4 py-2 bg-aurelia-dim/50 border border-aurelia-dim hover:border-white hover:text-white transition-all text-xs font-mono flex items-center gap-2">
+                        <span>👤</span> AUTHOR
+                    </button>
+                    <button class="px-4 py-2 bg-aurelia-dim/50 border border-aurelia-dim hover:border-gray-400 hover:text-gray-300 transition-all text-xs font-mono flex items-center gap-2">
+                        <span>📚</span> SOURCE
+                    </button>
+                    <button class="px-4 py-2 bg-aurelia-dim/50 border border-aurelia-dim hover:border-aurelia-green hover:text-aurelia-green transition-all text-xs font-mono flex items-center gap-2">
+                        <span>🏛️</span> DISCIPLINE
+                    </button>
+                    <button class="px-4 py-2 bg-aurelia-dim/50 border border-aurelia-dim hover:border-aurelia-orange hover:text-aurelia-orange transition-all text-xs font-mono flex items-center gap-2">
+                        <span>🚀</span> PROJECT
+                    </button>
                 </div>
             </div>
-        </aside>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <article class="glass p-6 rounded status-sapling hover:bg-aurelia-cyan/5 transition-all cursor-pointer group relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-3 opacity-20 font-mono text-4xl text-aurelia-cyan group-hover:opacity-40 transition-opacity">⚛️</div>
+                <div class="flex justify-between items-start mb-6">
+                    <span class="font-mono text-[10px] text-aurelia-cyan bg-aurelia-cyan/10 px-2 py-1 border border-aurelia-cyan/20">#status/sapling</span>
+                    <span class="text-gray-500 font-mono text-[10px]">UPDATED: 2h ago</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 group-hover:text-aurelia-cyan transition-colors">Intentional Stance</h3>
+                <p class="text-sm text-gray-400 mb-6 leading-relaxed">Treating a system as if it has beliefs and desires to predict its behavior.</p>
+                <div class="flex gap-2 mt-auto">
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#topic/phil-mind</span>
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#type/concept</span>
+                </div>
+            </article>
+
+            <article class="glass p-6 rounded status-evergreen hover:bg-aurelia-green/5 transition-all cursor-pointer group relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-3 opacity-20 font-mono text-4xl text-aurelia-green group-hover:opacity-40 transition-opacity">🏛️</div>
+                <div class="flex justify-between items-start mb-6">
+                    <span class="font-mono text-[10px] text-aurelia-green bg-aurelia-green/10 px-2 py-1 border border-aurelia-green/20">#status/evergreen</span>
+                    <span class="text-gray-500 font-mono text-[10px]">LINKED: 12 NODES</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 group-hover:text-aurelia-green transition-colors">Cognitive Science</h3>
+                <p class="text-sm text-gray-400 mb-6 leading-relaxed">The interdisciplinary study of mind and intelligence. Bridging the gap between the biological and the artificial.</p>
+                <div class="flex gap-2 mt-auto">
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#topic/cognitive-sci</span>
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#type/discipline</span>
+                </div>
+            </article>
+
+            <article class="glass p-6 rounded status-seed hover:border-gray-500 transition-all cursor-pointer group">
+                <div class="flex justify-between items-start mb-6">
+                    <span class="font-mono text-[10px] text-gray-500 border border-gray-700 px-2 py-1">#status/seed</span>
+                    <span class="text-gray-600 font-mono text-[10px]">2025-01-02</span>
+                </div>
+                <h3 class="text-lg font-bold text-gray-400 mb-2 group-hover:text-white transition-colors">Bridge: Dennett Ch. 3</h3>
+                <p class="text-xs text-gray-600 mb-4">Notes on "Skyhooks vs. Cranes". Needs processing.</p>
+                 <div class="flex gap-2 mt-auto">
+                    <span class="text-[10px] font-mono text-gray-700 border border-aurelia-dim px-1">#type/daily-bridge</span>
+                </div>
+            </article>
+
+            <article class="glass p-6 rounded status-sapling hover:bg-aurelia-cyan/5 transition-all cursor-pointer group relative">
+                <div class="absolute top-0 right-0 p-3 opacity-20 font-mono text-4xl text-white group-hover:opacity-40 transition-opacity">👤</div>
+                <div class="flex justify-between items-start mb-6">
+                    <span class="font-mono text-[10px] text-aurelia-cyan bg-aurelia-cyan/10 px-2 py-1 border border-aurelia-cyan/20">#status/sapling</span>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3 group-hover:text-aurelia-cyan transition-colors">Daniel Dennett</h3>
+                <p class="text-sm text-gray-400 mb-6 leading-relaxed">Philosopher of mind. Key concept: Multiple Drafts Model.</p>
+                <div class="flex gap-2 mt-auto">
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#topic/phil-mind</span>
+                    <span class="text-[10px] font-mono text-gray-600 border border-aurelia-dim px-1">#type/author</span>
+                </div>
+            </article>
+
+        </div>
     </main>
 
-    <footer class="border-t border-aurelia-dim py-6 bg-aurelia-panel">
-        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center font-mono text-[10px] text-gray-600 uppercase tracking-widest">
-            <span>LOC: UNITED STATES</span>
-            <span>AURELIA_OS // GARDEN MODULE</span>
-        </div>
-    </footer>
+    <script>
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(0, 242, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            for (let i = 0; i < 60; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw Connections
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(0, 242, 255, ${0.1 - distance/1500})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Update and Draw Particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        init();
+        animate();
+    </script>
+
 </body>
 </html>
