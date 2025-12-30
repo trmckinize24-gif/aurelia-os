@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURELIA // GARDEN_DECK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'aurelia-dark': '#0a0a0b',
+              'aurelia-cyan': '#00f2ff',
+              'aurelia-green': '#39ff14',
+              'aurelia-orange': '#ff8c00',
+              'aurelia-dim': '#1e1e20',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            animation: { 'scanline': 'scanline 8s linear infinite' },
+            keyframes: {
+                scanline: {
+                    '0%': { top: '-100px' },
+                    '100%': { top: '100%' },
+                }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { background-color: #0a0a0b; }
+      
+      /* THE AURELIA ATMOSPHERE */
+      .scanline {
+        width: 100%; height: 100px; z-index: 40;
+        background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0) 100%);
+        opacity: 0.1; position: fixed; pointer-events: none; animation: scanline 8s linear infinite;
+      }
+      
+      /* CARD PHYSICS */
+      .glass { 
+          background: rgba(10, 10, 11, 0.6); 
+          backdrop-filter: blur(12px); 
+          border: 1px solid rgba(255,255,255,0.05); 
+          box-shadow: 0 0 0 1px rgba(0,0,0,0.5);
+      }
+      .glass:hover {
+          background: rgba(255, 255, 255, 0.03); 
+          border-color: rgba(255,255,255,0.1);
+      }
+
+      /* ACTIVE BUTTON STATE */
+      .filter-btn.active {
+          background: rgba(255,255,255,0.1);
+          border-color: white;
+          color: white;
+          box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      }
+
+      /* MARKDOWN STYLES FOR MODAL */
+      .prose h1 { color: white; font-size: 1.8em; font-weight: 700; margin-bottom: 0.5em; border-bottom: 1px solid #333; padding-bottom: 0.2em; }
+      .prose h2 { color: #e5e7eb; font-size: 1.4em; font-weight: 600; margin-top: 1.5em; margin-bottom: 0.5em; }
+      .prose h3 { color: #00f2ff; font-size: 1.1em; font-weight: 600; margin-top: 1em; }
+      /* Brighter body text (matches text-gray-200) */
+      .prose p { color: #e5e7eb; line-height: 1.6; margin-bottom: 1em; }
+      /* Brighter list items */
+      .prose ul { list-style: disc; padding-left: 1.5em; color: #e5e7eb; margin-bottom: 1em; }
+      .prose blockquote { border-left: 3px solid #00f2ff; padding-left: 1em; color: #a1a1aa; font-style: italic; background: rgba(0,242,255,0.05); padding: 1em; border-radius: 4px; }
+      .prose a { color: #00f2ff; text-decoration: none; border-bottom: 1px dotted #00f2ff; }
+      
+      /* SCROLLBARS */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0a0a0b; }
+      ::-webkit-scrollbar-thumb { background: #1e1e20; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #00f2ff; }
+    </style>
+</head>
+<body class="text-gray-300 font-sans selection:bg-aurelia-cyan selection:text-black overflow-x-hidden min-h-screen flex flex-col">
+    
+    <div class="scanline"></div>
+
+    <nav class="fixed top-0 w-full z-50 border-b border-aurelia-dim bg-aurelia-dark/95 backdrop-blur-xl h-14">
+        <div class="max-w-[1600px] mx-auto px-6 h-full flex items-center justify-between font-mono text-[10px] tracking-[0.2em]">
+            <div class="flex items-center gap-3">
+                <div class="w-2 h-2 bg-aurelia-cyan rounded-full shadow-[0_0_8px_#00f2ff] animate-pulse"></div>
+                <span class="text-white font-bold">AURELIA_OS // V3.0</span>
+            </div>
+            <div class="hidden md:flex gap-8 uppercase text-gray-500">
+                <a href="index.html" class="hover:text-aurelia-cyan transition-colors">00_LOBBY</a>
+                <a href="garden.html" class="text-aurelia-cyan border-b border-aurelia-cyan pb-1">01_GARDEN</a>
+                <a href="museum.html" class="hover:text-aurelia-green transition-colors">02_MUSEUM</a>
+                <a href="portfolio.html" class="hover:text-white transition-colors">03_PORTFOLIO</a>
+            </div>
+        </div>
+    </nav>
+
+<div class="fixed top-14 w-full z-40 bg-aurelia-dark/90 backdrop-blur border-b border-aurelia-dim py-4 px-6 shadow-2xl">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex flex-wrap gap-2" id="filter-controls">
+                <button onclick="setFilter('all')" class="filter-btn active px-5 py-2 text-xs font-mono border border-aurelia-cyan bg-aurelia-cyan/10 text-aurelia-cyan rounded uppercase tracking-wider transition-all">All_Systems</button>
+                <button onclick="setFilter('daily-bridge')" class="filter-btn px-5 py-2 text-xs font-mono border border-gray-800 text-gray-500 hover:text-aurelia-orange hover:border-aurelia-orange rounded transition-colors uppercase tracking-wider">Logs</button>
+                <button onclick="setFilter('concept')" class="filter-btn px-5 py-2 text-xs font-mono border border-gray-800 text-gray-500 hover:text-aurelia-cyan hover:border-aurelia-cyan rounded transition-colors uppercase tracking-wider">Concepts</button>
+                <button onclick="setFilter('source')" class="filter-btn px-5 py-2 text-xs font-mono border border-gray-800 text-gray-500 hover:text-yellow-400 hover:border-yellow-400 rounded transition-colors uppercase tracking-wider">Library</button>
+                <button onclick="setFilter('author')" class="filter-btn px-5 py-2 text-xs font-mono border border-gray-800 text-gray-500 hover:text-white hover:border-white rounded transition-colors uppercase tracking-wider">Authors</button>
+                <button onclick="setFilter('discipline')" class="filter-btn px-5 py-2 text-xs font-mono border border-gray-800 text-gray-500 hover:text-aurelia-green hover:border-aurelia-green rounded transition-colors uppercase tracking-wider">Disciplines</button>
+            </div>
+            //
+<div class="flex items-center gap-3 border border-aurelia-dim bg-black/50 rounded px-4 py-2 w-full md:w-96">
+                <span class="text-xs opacity-50">CMD://</span>
+                <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="SEARCH_DATABASE..." class="bg-transparent border-none text-xs font-mono text-aurelia-cyan focus:outline-none w-full placeholder-gray-200">
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow pt-44 pb-20 px-6 w-full max-w-[1600px] mx-auto">
+        <div class="w-full max-w-[1600px] mx-auto mb-10 relative group rounded-sm overflow-hidden border border-gray-800">
+        <img src="assets/images/garden_banner.jpg" 
+     alt="System Header" 
+     class="w-full h-48 object-cover opacity-80 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
+        <div class="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-5 pointer-events-none mix-blend-overlay"></div>
+        <div class="absolute bottom-4 left-6">
+            <h1 class="text-4xl font-bold text-white font-mono tracking-tighter">COGNITIVE_ATLAS</h1>
+            <p class="text-xs text-aurelia-cyan font-mono mt-1 tracking-widest">SYSTEM STATUS: ONLINE // MOUNTED</p>
+        </div>
+    </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="cardGrid">
+                <article 
+                    onclick="openNote('note-1')" 
+                    data-type="daily-bridge"
+                    data-search="2025-12-21 organisms are the survival machines built by dna that ensure that genes are propagated into future generations by way of reproduction (sexual/asexual). evolution by natural selecti... daily-bridge"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-orange hover:border-r hover:border-r-aurelia-orange/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-orange rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-orange uppercase tracking-widest">Daily_Log</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">2025-12-21</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">📅</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    Organisms are the survival machines built by DNA that ensure that genes are propagated into future generations by way of reproduction (sexual/asexual). Evolution by natural selecti...
+</p>
+
+
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-gray-800/50"><div class="flex gap-2 flex-wrap"><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Replicator</span><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Survival Machines</span></div><span class="text-[9px] font-mono text-gray-600 group-hover:text-aurelia-orange">OPEN_FILE -></span></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-2')" 
+                    data-type="daily-bridge"
+                    data-search="2025-12-22 natural physical processes led to stability in early molecules, then replicators that evolved by natural selection which favors fecundity (speed), longevity (lifespan), and high fi... daily-bridge"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-orange hover:border-r hover:border-r-aurelia-orange/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-orange rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-orange uppercase tracking-widest">Daily_Log</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">2025-12-22</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">📅</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    Natural physical processes led to stability in early molecules, then replicators that evolved by natural selection which favors fecundity (speed), longevity (lifespan), and high fi...
+</p>
+
+
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-gray-800/50"><div class="flex gap-2 flex-wrap"><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">10_GARDEN/12_Seeds/12.1_Concepts/Natural Selection</span><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Genes</span><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Non-Teleological Process</span></div><span class="text-[9px] font-mono text-gray-600 group-hover:text-aurelia-orange">OPEN_FILE -></span></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-3')" 
+                    data-type="daily-bridge"
+                    data-search="2025-12-27 organisms are complex survival machines that are directed by the influence of genes. genes coordinate the construction of bodies, by communicating with other genes and instructing ... daily-bridge"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-orange hover:border-r hover:border-r-aurelia-orange/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-orange rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-orange uppercase tracking-widest">Daily_Log</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">2025-12-27</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">📅</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    organisms are complex survival machines that are directed by the influence of genes. Genes coordinate the construction of bodies, by communicating with other genes and instructing ...
+</p>
+
+
+                    <div class="mt-auto pt-4 flex items-center justify-between border-t border-gray-800/50"><div class="flex gap-2 flex-wrap"><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Coevolution</span><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">Transistor</span><span class="text-[9px] font-mono px-1.5 py-0.5 bg-aurelia-orange/10 text-aurelia-orange border border-aurelia-orange/20 rounded">sense organ</span></div><span class="text-[9px] font-mono text-gray-600 group-hover:text-aurelia-orange">OPEN_FILE -></span></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-4')" 
+                    data-type="concept"
+                    data-search="dna dna is the molecular medium of heredity that stores, transmits, and enables the expression of genetic information through sequences of nucleotide bases. ... concept"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-cyan hover:border-r hover:border-r-aurelia-cyan/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-cyan rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-cyan uppercase tracking-widest">Concept_Node</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">DNA</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">⚛️</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    DNA is the molecular medium of heredity that stores, transmits, and enables the expression of genetic information through sequences of nucleotide bases. ...
+</p>
+
+
+                    <div class="mt-auto pt-4 border-t border-gray-800/50"><div class="text-[9px] text-aurelia-cyan font-mono mb-2 opacity-70">LINKED_TO:</div><div class="flex gap-3 text-[10px] text-gray-500 font-mono flex-wrap"></div></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-5')" 
+                    data-type="concept"
+                    data-search="evolution evolution is the process by which heritable variation in populations changes over generations through mechanisms such as natural selection, mutation, genetic drift, and gene flow.... concept"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-cyan hover:border-r hover:border-r-aurelia-cyan/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-cyan rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-cyan uppercase tracking-widest">Concept_Node</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">Evolution</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">⚛️</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    Evolution is the process by which heritable variation in populations changes over generations through mechanisms such as natural selection, mutation, genetic drift, and gene flow....
+</p>
+
+
+                    <div class="mt-auto pt-4 border-t border-gray-800/50"><div class="text-[9px] text-aurelia-cyan font-mono mb-2 opacity-70">LINKED_TO:</div><div class="flex gap-3 text-[10px] text-gray-500 font-mono flex-wrap"><span class="hover:text-white transition-colors">→ [[Natural Selection</span></div></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-6')" 
+                    data-type="author"
+                    data-search="daniel dennett dennett is a central architect of modern naturalistic thinking about mind, [[evolution]], and meaning, offering mechanistic explanations that align closely with your interests in c... author"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-white hover:border-r hover:border-r-white/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                                <span class="text-[10px] font-mono text-white uppercase tracking-widest">Author_Profile</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">Daniel Dennett</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">👤</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    Dennett is a central architect of modern naturalistic thinking about mind, [[Evolution]], and meaning, offering mechanistic explanations that align closely with your interests in c...
+</p>
+
+
+                    <div class="mt-auto pt-4 border-t border-gray-800/50"><div class="text-[9px] font-mono text-gray-500 mb-1">KEY WORKS:</div><ul class="text-[10px] font-mono text-gray-500 space-y-1"><li class="flex items-center gap-2"><span class="text-aurelia-green">●</span> Darwin's Dangerous Idea</li><li class="flex items-center gap-2"><span class="text-aurelia-green">●</span> Intuition Pumps and Other Tools for Thinking</li></ul></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-7')" 
+                    data-type="source"
+                    data-search="the selfish gene [[evolution]] is best understood from a gene's perspective, viewing organisms as survival machines built by genes to perpetuate themselves, with [[genes]]s as the fundamental units... source"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-yellow-500 hover:border-r hover:border-r-yellow-500/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-yellow-500 rounded-full"></span>
+                                <span class="text-[10px] font-mono text-yellow-500 uppercase tracking-widest">Source_Text</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">The Selfish Gene</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">📖</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    [[Evolution]] is best understood from a gene's perspective, viewing organisms as survival machines built by genes to perpetuate themselves, with [[Genes]]s as the fundamental units...
+</p>
+
+
+                    <div class="mt-auto pt-4 flex justify-between items-center border-t border-gray-800/50"><div class="text-[9px] font-mono text-gray-500">AUTH: RICHARD DAWKINS</div><span class="px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-500 text-[9px] font-mono border border-yellow-500/20">READING</span></div>
+                </article>
+                
+                <article 
+                    onclick="openNote('note-8')" 
+                    data-type="discipline"
+                    data-search="evolutionary biology *define what this field includes and excludes.*... discipline"
+                    class="searchable-item glass p-6 rounded-sm border-l-2 border-l-aurelia-green hover:border-r hover:border-r-aurelia-green/50 cursor-pointer flex flex-col gap-4 transition-all duration-300 group min-h-[320px]">
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="w-1.5 h-1.5 bg-aurelia-green rounded-full"></span>
+                                <span class="text-[10px] font-mono text-aurelia-green uppercase tracking-widest">Discipline</span>
+                            </div>
+                            <h3 class="text-3xl font-bold text-white font-mono group-hover:text-white transition-colors">Evolutionary Biology</h3>
+                        </div>
+                        <div class="text-3xl opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all">🧠</div>
+                    </div>
+
+                    <div class="w-full h-px bg-gray-800/50"></div>
+
+                   <p class="text-sm text-white leading-relaxed font-normal line-clamp-5">
+    *Define what this field includes and excludes.*...
+</p>
+
+
+                    <div class="mt-auto pt-4 border-t border-gray-800/50"><div class="text-[9px] text-aurelia-green font-mono mb-2 opacity-70">CORE_BRICKS:</div><div class="flex gap-2 text-[10px] text-gray-500 font-mono flex-wrap"><span class="px-2 py-1 bg-white/5 rounded border border-white/5">Reviewing these concepts builds understanding of the discipline.</span><span class="px-2 py-1 bg-white/5 rounded border border-white/5">10_GARDEN/12_Seeds/12.1_Concepts/Natural Selection|Natural Selection</span><span class="px-2 py-1 bg-white/5 rounded border border-white/5">On the Origin of Species — Charles Darwin</span></div></div>
+                </article>
+                </div>
+    </main>
+
+    <div id="data-storage" style="display: none;"><div id="note-1" class="hidden"># 📅 [[2025-12-21]]
+
+---
+
+## 🎯 THE MISSION (Float Block)
+*The single 30-60 min Deep Work Goal (Reading/Writing).*
+**GOAL:** Read Ch 1 of The Selfish Gene
+**AI CONTEXT:** `NEWTASK: []
+
+---
+
+## 📚 KNOWLEDGE INTAKE
+*Process your Cornell Notes here. 15 mins max.*
+
+**SOURCE:** [[The Selfish Gene]]
+
+**⚛️ ATOMIC EXTRACTION (Cues -&gt; Links):**
+* **Concept:** [[Replicator]]
+* **Concept:** [[Survival Machines]]
+
+**📝 BRIEF SUMMARY:**
+&gt;Organisms are the survival machines built by DNA that ensure that genes are propagated into future generations by way of reproduction (sexual/asexual). Evolution by natural selection should be analyzed from the genes point of view rather than the species or individual organism level. 
+
+---
+
+## 🔒 CLOSING THE LOOP
+* **LESSON:** &quot; &quot;
+* [x] **Inbox Zero:** (Drag new files from Inbox -&gt; Atlas/Sources)
+* [x] **Context Cleared:** `/CLEARTASK`</div>
+<div id="note-2" class="hidden"># 📅 [[2025-12-22]]
+
+---
+
+## 🎯 THE MISSION (Float Block)
+*The single 30-60 min Deep Work Goal (Reading/Writing).*
+**GOAL:** Read Chapter 2 of Selfish Gene (Replicators)
+**AI CONTEXT:** `NEWTASK: []
+
+---
+
+## 📚 KNOWLEDGE INTAKE
+*Process your Cornell Notes here. 15 mins max.*
+
+**SOURCE:** [[The Selfish Gene]]
+
+**⚛️ ATOMIC EXTRACTION (Cues -&gt; Links):**
+* **Concept:** [[10_GARDEN/12_Seeds/12.1_Concepts/Natural Selection]]
+* **Concept:** [[Genes]]
+* **Concept:** [[Non-Teleological Process]]
+
+**📝 BRIEF SUMMARY:**
+&gt;Natural physical processes led to stability in early molecules, then replicators that evolved by natural selection which favors fecundity (speed), longevity (lifespan), and high fidelity (accuracy). This process is cumulative which drives complexity and leads to the development of more effective strategies for survival. Eventually this process led to DNA, which is a complex replicator molecule and a gene is a segment of DNA that generally holds specific instructions for building cells. 
+
+---
+
+## 🔒 CLOSING THE LOOP
+* **LESSON:** &quot; &quot;
+* [x] **Inbox Zero:** (Drag new files from Inbox -&gt; Atlas/Sources)
+* [x] **Context Cleared:** `/CLEARTASK`</div>
+<div id="note-3" class="hidden"># 📅 [[2025-12-27]]
+
+---
+
+## 🎯 THE MISSION (Float Block)
+*The single 30-60 min Deep Work Goal (Reading/Writing).*
+**GOAL:** Read Ch4 - The Gene Machine 
+**AI CONTEXT:** `NEWTASK: []`
+
+---
+
+## 📚 KNOWLEDGE INTAKE
+*Process your Cornell Notes here. 15 mins max.*
+
+**SOURCE:** [[Richard Dawkins]] [[The Selfish Gene]]
+
+**⚛️ ATOMIC EXTRACTION (Cues -&gt; Links):**
+* **Concept:** [[Coevolution]]
+* **Concept:** [[Transistor]]
+* **Concept:** [[sense organ]]
+* **Concept:** [[Information Retrieval]]
+* **Concept:** [[negative feedback]]
+* **Concept:** [[Feed Forward]]
+
+**📝 BRIEF SUMMARY:**
+&gt;organisms are complex survival machines that are directed by the influence of genes. Genes coordinate the construction of bodies, by communicating with other genes and instructing the building blocks of biological matter ([protein]), to construct cells, organs, organ systems and the entire organism. The body can be thought of as a collection or colony of genes that generally cooperate (to the degree that an organism is alive and well, though often genes are competing to survive and replicate even inside one body. 
+
+---
+
+## 🔒 CLOSING THE LOOP
+* **LESSON:** &quot; &quot;
+* [x] **Inbox Zero:** (Drag new files from Inbox -&gt; Atlas/Sources)
+* [x] **Context Cleared:** `/CLEARTASK`</div>
+<div id="note-4" class="hidden"># ⚛️ DNA
+
+**🔗 Related:**
+
+---
+
+### 💡 Definition
+&gt; DNA is the molecular medium of heredity that stores, transmits, and enables the expression of genetic information through sequences of nucleotide bases. 
+
+### 📝 Key Insight
+* DNA functions as a **[[Replicator]]**: its capacity for high-fidelity copying with occasional variation makes [[10_GARDEN/12_Seeds/12.1_Concepts/Natural Selection]] possible.
+- Information in DNA is **context-dependent**—[[Genes]] influence traits through interaction with developmental processes and environments, not as fixed blueprints.
+- The structure of DNA (double helix, complementary base pairing) explains both **stability** across generations and **[[variation]]**, the raw material of [[Evolution]].
+---</div>
+<div id="note-5" class="hidden"># ⚛️ Evolution
+
+**🔗 Related:** [[[[Natural Selection]]
+- [[Genetic Variation]]
+- [[Inheritance]]
+- [[Fitness]]
+- [[Adaptation]]
+- [[Population Thinking]]
+- [[Evolutionary Biology]]
+
+---
+
+### 💡 Definition
+&gt; Evolution is the process by which heritable variation in populations changes over generations through mechanisms such as natural selection, mutation, genetic drift, and gene flow.
+
+### 📝 Key Insight
+- Evolution operates at the **population level**, not the level of individual organisms.
+- Apparent design and complexity can emerge from **blind, cumulative processes** without foresight or purpose.
+- Evolution is **context-dependent and constrained** by history; adaptations are shaped by prior conditions, not optimal redesign.
+- Selection acts on **variation that already exists**; it cannot produce traits on demand, which explains tradeoffs, imperfections, and path dependence.
+- Multiple mechanisms operate simultaneously—**selection, drift, mutation, and gene flow**—with their relative influence varying by population size and environment.
+- Evolutionary explanations are **probabilistic, not deterministic**: they account for tendencies and distributions, not fixed outcomes for individuals.
+---</div>
+<div id="note-6" class="hidden"># 👤 Daniel Dennett
+
+### 📝 Profile &amp; Context
+&gt; Dennett is a central architect of modern naturalistic thinking about mind, [[Evolution]], and meaning, offering mechanistic explanations that align closely with your interests in cognition, evolutionary theory, and demystifying complex phenomena.
+
+### 📚 Key Works (In Vault)
+* [[Darwin&#x27;s Dangerous Idea]]
+* [[Intuition Pumps and Other Tools for Thinking]]
+
+### ⚛️ Core Concepts
+* Intentional Stance** — Predicting systems by treating them as if they have beliefs and desires.
+- **[[Intuition Pump]]** — Thought experiments that train intuition rather than prove arguments. )[[Thinking Tool]]
+- **[[Crane]] vs. [[Skyhook]]** — Mechanistic explanations versus illegitimate shortcuts.
+- **Universal Darwinism** — Evolutionary algorithms applying beyond biology.
+- **Multiple Drafts Model** — Distributed, non-Cartesian view of consciousness.
+- **[[Competence Without Comprehension]]** — Intelligent behavior without understanding.
+- **[[Free-Floating Rationale]]** — Apparent reasons emerging without conscious design.
+- **[[Meme]]tics** — Cultural evolution via idea replication. ([[Replicator]])
+- **Breaking the Spell** — Naturalistic analysis of religion.
+- **Narrative Self** — The self as a constructed center of gravity.</div>
+<div id="note-7" class="hidden"># 📖 The Selfish Gene
+
+**👤 Author:** [[Richard Dawkins]]
+**📍 Full Notes:** On reMarkable
+
+---
+
+### 💡 The Core Argument (Thesis)
+&gt;[[Evolution]] is best understood from a gene&#x27;s perspective, viewing organisms as survival machines built by genes to perpetuate themselves, with [[Genes]]s as the fundamental units of selection, selfishly promoting their self replication over the organisms well being, even explaining apparent altruism as gene-level strategies for survival. 
+
+---
+
+### 🧠 Concepts Extracted
+*(Concepts linked here will show in Graph View)*
+* [[ ]]</div>
+<div id="note-8" class="hidden"># 🧠 Evolutionary Biology
+
+### 🧐 Definition (The Scope)
+&gt; *Define what this field includes and excludes.*
+&gt; Evolutionary biology is the scientific study of how heritable variation in populations changes over time through mechanisms such as natural selection, mutation, genetic drift, and gene flow. It explains the origin of biological diversity, adaptation, and complexity using historical, population-level, and mechanistic accounts. The field excludes teleological, supernatural, or purpose-driven explanations and rejects essentialist views of fixed species types.
+
+---
+
+### 🔑 Core Concepts (The Bricks)
+*Reviewing these concepts builds understanding of the discipline.*
+* [[10_GARDEN/12_Seeds/12.1_Concepts/Natural Selection|Natural Selection]]
+- [[Genetic Variation]]
+- [[Inheritance]]
+- [[Fitness]]
+- [[Adaptation]]
+- [[Population Thinking]]
+- [[Evolutionary Biology]]
+- [[Coevolution]]
+### 📚 Foundational Texts
+*  [[On the Origin of Species — Charles Darwin]]
+- [[The Selfish Gene]] — [[Richard Dawkins]]
+- [[Evolutionary Analysis — Freeman &amp; Herron]]
+- [[Darwin&#x27;s Dangerous Idea]] - [[Daniel Dennett]]
+- [[Why Evolution is True]] - [[Jerry Coyne]]
+- [[Principles of Population Genetics]] - [[Hartl &amp; Clark]]
+### 🧪 Unresolved Questions
+- How predictable is evolutionary change under similar selection pressures?
+- What is the relative contribution of selection versus drift in complex traits?
+- How should cultural evolution and gene–culture coevolution be formally integrated into evolutionary theory?</div>
+</div>
+
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300" onclick="closeModal()">
+        <div id="modal-panel" class="bg-[#0a0a0b] border border-gray-800 w-full max-w-6xl h-[90vh] rounded-lg shadow-2xl flex flex-col transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            
+            <div class="flex justify-between items-center p-4 border-b border-gray-800 bg-black/50">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-aurelia-cyan rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-mono text-gray-400 uppercase tracking-widest">READING_MODE</span>
+                </div>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="modal-content" class="p-8 overflow-y-auto prose prose-invert max-w-none text-sm font-sans leading-relaxed">
+                </div>
+
+            <div class="p-2 border-t border-gray-800 bg-black/50 text-center">
+                <span class="text-[9px] font-mono text-gray-600">PRESS ESC TO CLOSE</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // STATE MANAGEMENT
+        let currentType = 'all';
+        let currentQuery = '';
+
+        // UI REFERENCES
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        const modalPanel = document.getElementById('modal-panel');
+        const modalContent = document.getElementById('modal-content');
+
+        // 1. FILTER LOGIC
+        function setFilter(type) {
+            currentType = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.remove('bg-aurelia-cyan/10', 'text-aurelia-cyan', 'border-aurelia-cyan');
+                btn.classList.add('border-gray-800', 'text-gray-500');
+            });
+            event.target.classList.add('active');
+            updateGrid();
+        }
+
+        // 2. SEARCH LOGIC
+        function handleSearch() {
+            currentQuery = document.getElementById('searchInput').value.toLowerCase();
+            updateGrid();
+        }
+
+        // 3. ADDITIVE EVALUATION
+        function updateGrid() {
+            const items = document.querySelectorAll('.searchable-item');
+            items.forEach(item => {
+                const itemType = item.dataset.type;
+                const itemSearch = item.dataset.search;
+                const typeMatch = (currentType === 'all') || (itemType.includes(currentType));
+                const searchMatch = itemSearch.includes(currentQuery);
+
+                if (typeMatch && searchMatch) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 4. MODAL LOGIC
+        function openNote(noteId) {
+            const rawEl = document.getElementById(noteId);
+            if (!rawEl) return;
+            const txt = document.createElement("textarea");
+            txt.innerHTML = rawEl.innerHTML;
+            modalContent.innerHTML = marked.parse(txt.value);
+            modalBackdrop.classList.remove('hidden');
+            setTimeout(() => {
+                modalBackdrop.classList.remove('opacity-0');
+                modalPanel.classList.remove('scale-95');
+                modalPanel.classList.add('scale-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modalBackdrop.classList.add('opacity-0');
+            modalPanel.classList.remove('scale-100');
+            modalPanel.classList.add('scale-95');
+            setTimeout(() => {
+                modalBackdrop.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') closeModal(); 
+        });
+    </script>
+</body>
+</html>
