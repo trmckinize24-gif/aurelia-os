@@ -29,29 +29,31 @@
       extend: {
         colors: {
           // SEMANTIC MAPPING
-          'aurelia-bg': '#fdfbf7',
-          'aurelia-card': '#ffffff',
-          'aurelia-surface': '#f3f4f6',
+          'aurelia-bg': '#0a0a0b',
+          'aurelia-card': '#121214',
+          'aurelia-surface': '#18181b',
           
-          'aurelia-text': '#111827',
-          'aurelia-muted': '#4b5563',
-          'aurelia-inverted': '#ffffff',
+          'aurelia-text': '#ffffff',
+          'aurelia-muted': '#9ca3af',
+          'aurelia-inverted': '#000000',
 
-          'aurelia-border': '#e5e7eb',
+          'aurelia-border': '#27272a',
           
           // ROLES
-          'aurelia-primary': '#1e3a8a',
-          'aurelia-secondary': '#dc2626',
-          'aurelia-tertiary': '#b45309',
-          'aurelia-accent': '#2563eb',
+          'aurelia-primary': '#00f2ff',
+          'aurelia-secondary': '#8a2be2',
+          'aurelia-tertiary': '#ff8c00',
+          'aurelia-accent': '#39ff14',
         },
         borderRadius: {
-            'theme': '8px'
+            'theme': '2px'
         },
         fontFamily: {
           sans: ['Inter', 'sans-serif'],
-          mono: ['Courier Prime', 'Courier New', monospace],
+          mono: ['JetBrains Mono', 'monospace'],
         },
+        
+        animation: { 'scanline': 'scanline 8s linear infinite' },
         
       }
     }
@@ -60,85 +62,68 @@
 
 <style>
     /* NAV BAR GLOW UTILITIES */
-    .text-shadow-cyan { text-shadow: 0 0 10px #1e3a8a80; }
-    .text-shadow-green { text-shadow: 0 0 10px #2563eb80; }
-    .text-shadow-purple { text-shadow: 0 0 10px #dc262680; }
-    .text-shadow-orange { text-shadow: 0 0 10px #b4530980; }
+    .text-shadow-cyan { text-shadow: 0 0 10px #00f2ff80; }
+    .text-shadow-green { text-shadow: 0 0 10px #39ff1480; }
+    .text-shadow-purple { text-shadow: 0 0 10px #8a2be280; }
+    .text-shadow-orange { text-shadow: 0 0 10px #ff8c0080; }
     .text-shadow-white { text-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
     /* GLOBAL RESET */
     body { 
-        background-color: #fdfbf7; 
-        color: #111827;
+        background-color: #0a0a0b; 
+        color: #ffffff;
     }
     
 /* GLOBAL SELECTION HIGHLIGHTER */
     ::selection {
-        background: #1e3a8a; /* Cyan in Cyber Prime */
-        color: #fdfbf7;      /* Black Text for contrast */
+        background: #00f2ff; /* Cyan in Cyber Prime */
+        color: #0a0a0b;      /* Black Text for contrast */
         text-shadow: none; /* Removes glow for cleaner reading */
     }
 
     /* Firefox Support */
     ::-moz-selection {
-        background: #1e3a8a;
-        color: #fdfbf7;
+        background: #00f2ff;
+        color: #0a0a0b;
         text-shadow: none;
     }
 
     /* UNIVERSAL GLASS CLASS */
     .glass {
-        background: rgba(10, 10, 11, 0.95);
+        background: rgba(10, 10, 11, 0.6);
     }
     
     /* THE_PATRIOT SPECIFIC OVERRIDE FOR GLASS */
-    
-    .glass {
-        background: white;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
-    /* Invert the scanline/grid to be subtle gray on white */
-    .scanline {
-        background: repeating-linear-gradient(
-            0deg,
-            transparent,
-            transparent 1px,
-            #e5e7eb 1px,
-            #e5e7eb 2px
-        );
-        opacity: 0.3;
-    }
     
 
     /* --- [NEW] GLOBAL PROSE DEFAULTS --- */
     /* This makes all Markdown content follow the active theme colors automatically */
     .prose {
-        color: #4b5563;
+        color: #9ca3af;
         max-width: 65ch; /* Optimal reading width */
     }
     .prose h1, .prose h2, .prose h3, .prose h4, .prose strong {
-        color: #111827;
+        color: #ffffff;
     }
     .prose a {
-        color: #1e3a8a;
+        color: #00f2ff;
         text-decoration: none;
-        border-bottom: 1px dotted #1e3a8a;
+        border-bottom: 1px dotted #00f2ff;
     }
     .prose a:hover {
-        color: #2563eb;
+        color: #39ff14;
         border-bottom-style: solid;
     }
     .prose code {
-        color: #2563eb;
-        background: #f3f4f6;
+        color: #39ff14;
+        background: #18181b;
         padding: 0.2em 0.4em;
         border-radius: 4px;
         font-size: 0.9em;
     }
     .prose blockquote {
-        border-left-color: #1e3a8a;
-        color: #4b5563;
+        border-left-color: #00f2ff;
+        color: #9ca3af;
     }
 </style>
     
@@ -243,14 +228,14 @@
 
     /* 6. OBSIDIAN READER ENGINE (PRESERVED) */
     .obsidian-reader { font-family: 'Inter', sans-serif; color: #dcddde; line-height: 1.6; }
-    .obsidian-reader h1, .obsidian-reader h2, .obsidian-reader h3 { color: #111827; font-weight: 600; margin-top: 1.5em; }
-    .obsidian-reader h1 { font-size: 2em; border-bottom: 1px solid #e5e7eb; pb-2; }
-    .obsidian-reader a { color: #1e3a8a; text-decoration: none; }
+    .obsidian-reader h1, .obsidian-reader h2, .obsidian-reader h3 { color: #ffffff; font-weight: 600; margin-top: 1.5em; }
+    .obsidian-reader h1 { font-size: 2em; border-bottom: 1px solid #27272a; pb-2; }
+    .obsidian-reader a { color: #00f2ff; text-decoration: none; }
     .obsidian-reader a:hover { opacity: 0.8; text-decoration: underline; }
     .obsidian-reader pre { background-color: #121212; border: 1px solid #2a2a2a; border-radius: 4px; padding: 16px; overflow-x: auto; margin: 1.5em 0; }
-    .obsidian-reader code { font-family: 'JetBrains Mono', monospace; background-color: rgba(255,255,255,0.05); padding: 2px 4px; color: #2563eb; }
-    .obsidian-reader blockquote { border-left: 4px solid #dc2626; background-color: rgba(138, 43, 226, 0.05); padding: 12px 16px; margin: 1.5em 0; }
-    .obsidian-reader img { max-width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; }
+    .obsidian-reader code { font-family: 'JetBrains Mono', monospace; background-color: rgba(255,255,255,0.05); padding: 2px 4px; color: #39ff14; }
+    .obsidian-reader blockquote { border-left: 4px solid #8a2be2; background-color: rgba(138, 43, 226, 0.05); padding: 12px 16px; margin: 1.5em 0; }
+    .obsidian-reader img { max-width: 100%; border: 1px solid #27272a; border-radius: 4px; }
     .obsidian-reader ul, .obsidian-reader ol { padding-left: 2em; margin: 1em 0; }
 </style>
 
@@ -681,7 +666,7 @@ Conceptually the vertebrate brain is built on top of the more ancient steering s
     <article 
         onclick="openNote('note-9')" 
         data-type="daily-bridge"
-        data-search="2026-01-08 daily-bridge # 📅 [[2026-01-08]] --- ## 🎯 the mission (float block) *the single 30-60 min deep work goal (reading/writing).* **goal:** extract key concepts and insights from cal newport on the huberman lab podcast **ai context:** `newtask: []` --- ## 📚 knowledge intake *process your cornell notes here. 15 mins max.* **source:** [[huberman lab podcast]] by [[andrew huberman]] **⚛️ atomic extraction (cues -> links):** * **concept:** [[active recall]] * **concept:** [[task switching]] * **concept:** [[semantics]] + [[semantic network]] * **concept:** [[deliberate practice]] vs [[flow state]] * **concept:** [[deep work]] **📝 brief summary:** >finish later... --- ## 🔒 closing the loop * **lesson:** ' ' * [ ] **inbox zero:** (drag new files from inbox -> atlas/sources) * [ ] **context cleared:** `/cleartask`"
+        data-search="2026-01-08 daily-bridge # 📅 [[2026-01-08]] --- ## 🎯 the mission (float block) *the single 30-60 min deep work goal (reading/writing).* **goal:** extract key concepts and insights from cal newport on the huberman lab podcast **ai context:** `newtask: []` --- ## 📚 knowledge intake *process your cornell notes here. 15 mins max.* **source:** [[huberman lab podcast]] by [[andrew huberman]] **⚛️ atomic extraction (cues -> links):** * **concept:** [[active recall]] * **concept:** [[task switching]] * **concept:** [[semantics]] + [[semantic network]] * **concept:** [[deliberate practice]] vs [[flow state]] * **concept:** [[deep work]] **📝 brief summary:** >in order to become a well balanced, productive, and quality thinker/creative, i should leverage the best practices for optimal thinking, learning, and producing output. implementation of these strategies into my daily life will surely transform me from a mediocre thinker and writer into ann academic asset with various competencies! --- ## 🔒 closing the loop * **lesson:** ' ' * [x] **inbox zero:** (drag new files from inbox -> atlas/sources) * [x] **context cleared:** `/cleartask`"
         class="searchable-item glass p-6 rounded-sm border-2 border-aurelia-tertiary border-opacity-60 hover:border-opacity-100 cursor-pointer flex flex-col gap-4 transition-all duration-300 hover:scale-[1.12] hover:z-10 group min-h-[320px]">
         
         <div class="flex justify-between items-start">
@@ -698,7 +683,7 @@ Conceptually the vertebrate brain is built on top of the more ancient steering s
         <div class="w-full h-px bg-gray-800/50"></div>
 
         <p class="text-lg text-gray-100 leading-relaxed font-normal line-clamp-5">
-            FInish later...
+            In order to become a well balanced, productive, and quality thinker/creative, I should leverage the best practices for optimal thinking, learning, and producing output. Implementation of these strategies into my daily life will surely transform me from a mediocre thinker and writer into ann academic asset with various competencies!
         </p>
         
         <div class="mt-auto pt-4 flex items-center justify-start border-t border-gray-800/50"><div class="flex gap-2 flex-wrap"><span class="text-xs font-mono px-2 py-1 bg-aurelia-tertiary/10 text-aurelia-tertiary border border-aurelia-tertiary/20 rounded">Active Recall</span><span class="text-xs font-mono px-2 py-1 bg-aurelia-tertiary/10 text-aurelia-tertiary border border-aurelia-tertiary/20 rounded">Task Switching</span><span class="text-xs font-mono px-2 py-1 bg-aurelia-tertiary/10 text-aurelia-tertiary border border-aurelia-tertiary/20 rounded">Semantics</span></div></div>
@@ -4943,14 +4928,14 @@ Conceptually the vertebrate brain is built on top of the more ancient steering s
 * **Concept:** [[Deep Work]]
 
 **📝 BRIEF SUMMARY:**
->FInish later...
+>In order to become a well balanced, productive, and quality thinker/creative, I should leverage the best practices for optimal thinking, learning, and producing output. Implementation of these strategies into my daily life will surely transform me from a mediocre thinker and writer into ann academic asset with various competencies!
 
 ---
 
 ## 🔒 CLOSING THE LOOP
 * **LESSON:** " "
-* [ ] **Inbox Zero:** (Drag new files from Inbox -> Atlas/Sources)
-* [ ] **Context Cleared:** `/CLEARTASK`</div>
+* [x] **Inbox Zero:** (Drag new files from Inbox -> Atlas/Sources)
+* [x] **Context Cleared:** `/CLEARTASK`</div>
         
             <div id="note-60" class="hidden"># 📖 A Brief History of Intelligence
 
